@@ -1,0 +1,10 @@
+<div class="container">
+    <div class="one-half col">
+        <textarea #rawMarkdown (keyup)="updateValue(rawMarkdown.value)"></textarea>
+    </div>
+
+    <div class="one-half col">
+        <div innerHtml="html"></div>
+        <div>Value: {{html}}</div>
+    </div>
+</div>
