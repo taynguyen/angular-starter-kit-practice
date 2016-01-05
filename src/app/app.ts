@@ -1,51 +1,24 @@
 import 'angular2/bundles/angular2-polyfills';
 
 import { Component } from 'angular2/core';
+import { NgFor } from 'angular2/common';
 
 import { bootstrap } from 'angular2/platform/browser';
 
-import { MarkdownService } from './services/markdown.service';
+import { MarkdownEditorComponent } from './components/editor/editor.component';
+
 import { LocalStorageService } from './services/localStorage.service';
+import { PostService } from './services/post.service';
 
 @Component({
   selector: 'markdown-app',
   templateUrl: '/app/markdownApp.html',
-  bindings: [MarkdownService] //bindings was formerly appInjector
+  directives: [NgFor, MarkdownEditorComponent],
 })
-class MarkdownAppComponent {
-  public html: string;
-  public initVal: string;
+class MarkdownAppComponent { 
   
-  private md: MarkdownService;
-  private localStorage: LocalStorageService;
-  private storageKey: string = 'markdown-app';
-
-  constructor(LocalStorageService: LocalStorageService, MarkdownService: MarkdownService) {
-    this.localStorage = LocalStorageService;
-    this.html = '';
-    this.md = MarkdownService;
-
-    var text = this.localStorage.retrieve(this.storageKey);
-    this.initVal = text ? text.text : '';
-
-    this.updateValue(this.initVal);
-  }
-
-  public updateValue(val) {
-    this.html = this.md.convert(val);
-  }
-
-  public save(val) {
-    this.localStorage.store(this.storageKey, { text: val });
-  }
-  
-  public saveMarkdown(val) {
-      this.localStorage.store(this.storageKey, { text: val });
-  }
-  
-  public deleteMarkdown() {
-      this.localStorage.store(this.storageKey, {});
+  constructor() {
   }
 }
 
-bootstrap(MarkdownAppComponent, [LocalStorageService]);
+bootstrap(MarkdownAppComponent, [LocalStorageService, PostService]);
