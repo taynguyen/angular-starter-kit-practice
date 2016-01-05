@@ -1,35 +1,51 @@
 import 'angular2/bundles/angular2-polyfills';
 
-import { bootstrap } from 'angular2/platform/browser';
 import { Component } from 'angular2/core';
+
+import { bootstrap } from 'angular2/platform/browser';
+
+import { MarkdownService } from './services/markdown.service';
 import { LocalStorageService } from './services/localStorage.service';
 
-import * as marked from 'marked';
-
 @Component({
-  selector: 'markdown-app', //html selector <markdown-app></markdown-app>
-  templateUrl: '/app/markdownApp.html' //can also specify templateUrl
+  selector: 'markdown-app',
+  templateUrl: '/app/markdownApp.html',
+  bindings: [MarkdownService] //bindings was formerly appInjector
 })
-
 class MarkdownAppComponent {
-    public html = '';
-    //public md: MarkedStatic; //not sure why but that's the Marked type
-    
-    private localStorage: LocalStorageService;
-    private storageKey: 'markdown-app';
-    
-    constructor(LocalStorageService: LocalStorageService) {
-        this.localStorage = LocalStorageService;
-        this.html = '';
-        //this.md = marked;
-    }
-    
-    public updateValue(val) {
-        // if (!val) { return '';}
-        //this.html = this.md.parse(val);
-        
-        this.html = val;
-    }
+  public html: string;
+  public initVal: string;
+  
+  private md: MarkdownService;
+  private localStorage: LocalStorageService;
+  private storageKey: string = 'markdown-app';
+
+  constructor(LocalStorageService: LocalStorageService, MarkdownService: MarkdownService) {
+    this.localStorage = LocalStorageService;
+    this.html = '';
+    this.md = MarkdownService;
+
+    var text = this.localStorage.retrieve(this.storageKey);
+    this.initVal = text ? text.text : '';
+
+    this.updateValue(this.initVal);
+  }
+
+  public updateValue(val) {
+    this.html = this.md.convert(val);
+  }
+
+  public save(val) {
+    this.localStorage.store(this.storageKey, { text: val });
+  }
+  
+  public saveMarkdown(val) {
+      this.localStorage.store(this.storageKey, { text: val });
+  }
+  
+  public deleteMarkdown() {
+      this.localStorage.store(this.storageKey, {});
+  }
 }
 
 bootstrap(MarkdownAppComponent, [LocalStorageService]);

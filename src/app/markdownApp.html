@@ -1,10 +1,13 @@
 <div class="container">
     <div class="one-half col">
         <textarea #rawMarkdown (keyup)="updateValue(rawMarkdown.value)"></textarea>
+        <br />
+        <a class="button" (click)="saveMarkdown(rawMarkdown.value)">Save</a>
+        <a class="button" (click)="deleteMarkdown()">Delete</a>
     </div>
 
     <div class="one-half col">
-        <div innerHtml="html"></div>
+        <div [innerHtml]="html"></div>
         <div>Value: {{html}}</div>
     </div>
 </div>
