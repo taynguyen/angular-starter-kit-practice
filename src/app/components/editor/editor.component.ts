@@ -1,41 +1,51 @@
-import { Component } from 'angular2/core';
+import { Component, Input } from 'angular2/core';
 
 import { MarkdownService } from '../../services/markdown.service';
 import { PostService } from '../../services/post.service';
 
 @Component({
-  selector: 'markdown-editor',
-  bindings: [MarkdownService],
-  templateUrl: '/app/components/editor/editor.component.html'
+    selector: 'markdown-editor',
+    bindings: [MarkdownService],
+    templateUrl: '/app/components/editor/editor.component.html'
 })
 export class MarkdownEditorComponent {
-  public html: string;
-  public initVal: string;
+    @Input() title: string;
 
-  private md: MarkdownService;
-  private postService: PostService;
-  private titleKey: string = 'title';
+    public html: string;
+    public initVal: string;
 
-  constructor(PostService: PostService, MarkdownService: MarkdownService) {
-    this.postService = PostService;
-    this.html = '';
-    this.md = MarkdownService;
+    private md: MarkdownService;
+    private postService: PostService;
+    private titleKey: string = 'title';
 
-    var text = this.postService.getPost(this.titleKey);
-    this.initVal = text && text.text ? text.text : '';
+    ngAfterContentChecked() {
+        var text = this.postService.getPost(this.title);
+        this.initVal = (text && text.text) ? text.text : '';
+        
+        this.updateValue(this.initVal);
+    }
+    
+    constructor(PostService: PostService, MarkdownService: MarkdownService) {
+        this.postService = PostService;
+        this.md = MarkdownService;
+        
+        this.html = '';
+        this.initVal = '';
+    }
 
-    this.updateValue(this.initVal);
-  }
+    public updateValue(val) {
+        if (!val) {
+            return '';
+        }
+        
+        this.html = this.md.convert(val);
+    }
 
-  public updateValue(val) {
-    this.html = this.md.convert(val);
-  }
+    public savePost(val) {
+        this.postService.savePost(this.title, { text: val });
+    }
 
-  public savePost(val) {
-    this.postService.savePost(this.titleKey, { text: val });
-  }
-
-  public deletePost() {
-    this.postService.savePost(this.titleKey, {});
-  }
+    public deletePost() {
+        this.postService.savePost(this.title, {});
+    }
 }

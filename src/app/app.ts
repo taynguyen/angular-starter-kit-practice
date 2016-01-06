@@ -16,8 +16,14 @@ import { PostService } from './services/post.service';
   directives: [NgFor, MarkdownEditorComponent],
 })
 class MarkdownAppComponent { 
+  public titles: Array<string>;
   
-  constructor() {
+  constructor(PostService: PostService) {
+      this.titles = PostService.getTitles() || [];
+  }
+  
+  public addPost(title: string) {
+      this.titles.push(title);
   }
 }
 
