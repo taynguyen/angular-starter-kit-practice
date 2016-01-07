@@ -46,6 +46,6 @@ export class MarkdownEditorComponent {
     }
 
     public deletePost() {
-        this.postService.savePost(this.title, {});
+        this.postService.deletePost(this.title);
     }
 }

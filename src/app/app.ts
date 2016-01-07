@@ -1,30 +1,28 @@
 import 'angular2/bundles/angular2-polyfills';
 
-import { Component } from 'angular2/core';
-import { NgFor } from 'angular2/common';
+import { Component, View, provide } from 'angular2/core';
+import { APP_BASE_HREF ,ROUTER_PROVIDERS, ROUTER_DIRECTIVES, RouteConfig, RouteParams } from 'angular2/router'
 
 import { bootstrap } from 'angular2/platform/browser';
-
-import { MarkdownEditorComponent } from './components/editor/editor.component';
 
 import { LocalStorageService } from './services/localStorage.service';
 import { PostService } from './services/post.service';
 
+//Pages
+import { PostListComponent } from './components/postlist/postList.component';
+import { PostComponent } from './components/post/post.component';
+
 @Component({
-  selector: 'markdown-app',
-  templateUrl: '/app/markdownApp.html',
-  directives: [NgFor, MarkdownEditorComponent],
+    selector: 'app',
+    templateUrl: '/app/app.html',
+    directives: [ROUTER_DIRECTIVES]
 })
-class MarkdownAppComponent { 
-  public titles: Array<string>;
-  
-  constructor(PostService: PostService) {
-      this.titles = PostService.getTitles() || [];
-  }
-  
-  public addPost(title: string) {
-      this.titles.push(title);
-  }
+@RouteConfig([
+    { path: '/', component: PostListComponent, as: 'PostList'},
+    { path: '/post/:name', component: PostComponent, as: 'Post'}
+])
+class App {
+    
 }
 
-bootstrap(MarkdownAppComponent, [LocalStorageService, PostService]);
+bootstrap(App, [LocalStorageService, PostService, ROUTER_PROVIDERS, provide(APP_BASE_HREF, { useValue: '/'})]);
